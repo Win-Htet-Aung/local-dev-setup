@@ -1,0 +1,28 @@
+version: '3.8'
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.27.0.0/16
+          gateway: 172.27.0.1
+
+services:
+  postgresql:
+    build:
+      context: ./postgresql
+      args:
+        - PG_VERSION=${PG_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_postgresql_${PG_VERSION}
+    image: ${COMPOSE_PROJECT_NAME}_postgresql_${PG_VERSION}
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - PGDATA=${PG_DATA}
+    volumes:
+      - ${DATA_PATH_HOST}/postgresql/data:${PG_DATA}
+    ports:
+      - "${PG_PORT_HOST}:5432"
+    networks:
+      - localnet
