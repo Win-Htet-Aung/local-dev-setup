@@ -26,3 +26,21 @@ services:
       - "${PG_PORT_HOST}:5432"
     networks:
       - localnet
+
+  mariadb:
+    build:
+      context: ./mariadb
+      args:
+        - TZ=${MARIADB_TZ}
+    container_name: ${COMPOSE_PROJECT_NAME}_mariadb_${MARIADB_VERSION}
+    image: ${COMPOSE_PROJECT_NAME}_mariadb_${MARIADB_VERSION}
+    ports:
+      - "${MARIADB_HOST_PORT}:3306"
+    hostname: mariadb
+    volumes:
+      - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    networks:
+      - localnet
+    tty: true
