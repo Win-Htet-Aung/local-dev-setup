@@ -39,8 +39,51 @@ services:
     hostname: mariadb
     volumes:
       - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
+      - ./mariadb/conf.d:/etc/mysql/conf.d
     environment:
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     networks:
       - localnet
     tty: true
+
+  rt:
+    build:
+      context: ./rt
+      args:
+        - RT_WEB_PORT=${RT_WEB_PORT}
+    container_name: ${COMPOSE_PROJECT_NAME}_rt_${RT_VERSION}
+    image: ${COMPOSE_PROJECT_NAME}_rt_${RT_VERSION}
+    ports:
+      - "${RT_WEB_PORT}:${RT_WEB_PORT}"
+    hostname: rt
+    volumes:
+      - ${CODE_PATH_HOST}/rt-${RT_VERSION}:/usr/local/src
+      - ${DATA_PATH_HOST}/rt:/opt/rt5
+    environment:
+      - RT_WEB_DOMAIN=${RT_WEB_DOMAIN}
+      - RT_WEB_PORT=${RT_WEB_PORT}
+      - RT_DB_HOST=${RT_DB_HOST}
+      - RT_DB_PORT=${RT_DB_PORT}
+      - RT_DB_USER=${RT_DB_USER}
+      - RT_DB_PASSWORD=${RT_DB_PASSWORD}
+      - RT_DB_NAME=${RT_DB_NAME}
+    networks:
+      - localnet
+    tty: true
+
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        - TZ=${TZ}
+    container_name: ${COMPOSE_PROJECT_NAME}_nginx
+    image: ${COMPOSE_PROJECT_NAME}_nginx
+    ports:
+      - "${NGINX_HTTP}:80"
+      - "${NGINX_HTTPS}:443"
+    volumes:
+      - ${DATA_PATH_HOST}/nginx:/var/log/nginx
+      - ${NGINX_SITES_PATH}:/etc/nginx/sites-available
+      - ${NGINX_SSL_PATH}:/etc/nginx/ssl
+    networks:
+      - localnet
