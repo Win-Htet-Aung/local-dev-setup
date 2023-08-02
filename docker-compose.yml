@@ -1,0 +1,30 @@
+version: "3.8"
+
+networks:
+  local:
+    name: local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.10.0.0/16
+          gateway: 172.10.0.1
+
+services:
+  mariadb:
+    build:
+      context: ./mariadb
+      args:
+        - MARIADB_VERSION=${MARIADB_VERSION}
+    image: local-mariadb-${MARIADB_VERSION}
+    container_name: local-mariadb-${MARIADB_VERSION}
+    hostname: mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql
+    ports:
+      - "${MARIADB_HOST_PORT}:3306"
+    networks:
+      - local
+    tty: true
