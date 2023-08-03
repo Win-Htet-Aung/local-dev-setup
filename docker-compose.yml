@@ -11,6 +11,21 @@ networks:
           gateway: 172.10.0.1
 
 services:
+  node:
+    build:
+      context: ./node
+      args:
+        - INSTALL_VERSION=${NODE_VERSION}
+    image: local-node-${NODE_VERSION}
+    container_name: local-node-${NODE_VERSION}
+    volumes:
+      - ${CODE_PATH_HOST}:${CODE_PATH_CONTAINER}
+    ports:
+      - "${NODE_PORT}:${NODE_PORT}"
+    networks:
+      - local
+    tty: true
+
   mariadb:
     build:
       context: ./mariadb
