@@ -62,3 +62,19 @@ services:
     networks:
       - local
     tty: true
+
+  rabbitmq:
+    build:
+      context: ./rabbitmq
+      args:
+        - RABBITMQ_VERSION=${RABBITMQ_VERSION}
+    image: local-rabbitmq-${RABBITMQ_VERSION}
+    container_name: local-rabbitmq-${RABBITMQ_VERSION}
+    hostname: rabbitmq
+    volumes:
+      - ${DATA_PATH_HOST}/rabbitmq:/var/lib/rabbitmq/mnesia
+    ports:
+      - "${RABBITMQ_HOST_PORT}:15672"
+    networks:
+      - local
+    tty: true
