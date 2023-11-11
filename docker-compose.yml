@@ -26,6 +26,21 @@ services:
       - local
     tty: true
 
+  python:
+    build:
+      context: ./python
+      args:
+        - PYTHON_VERSION=${PYTHON_VERSION}
+    image: local-python-${PYTHON_VERSION}
+    container_name: local-python-${PYTHON_VERSION}
+    volumes:
+      - ${CODE_PATH_HOST}:${CODE_PATH_CONTAINER}
+    ports:
+      - "${PYTHON_PORT}:${PYTHON_PORT}"
+    networks:
+      - local
+    tty: true
+
   mariadb:
     build:
       context: ./mariadb
@@ -93,6 +108,27 @@ services:
       - ${DATA_PATH_HOST}/redis/data:/data
     ports:
       - "${REDIS_HOST_PORT}:6379"
+    networks:
+      - local
+    tty: true
+  
+  postgres:
+    build:
+      context: ./postgres
+      args:
+        - POSTGRES_VERSION=${POSTGRES_VERSION}
+    image: local-postgres-${POSTGRES_VERSION}
+    container_name: local-postgres-${POSTGRES_VERSION}
+    hostname: postgres
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGDATA=${PGDATA}
+    volumes:
+      - ${DATA_PATH_HOST}/postgres:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_HOST_PORT}:5432"
     networks:
       - local
     tty: true
